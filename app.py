@@ -102,8 +102,6 @@ if archivo is not None:
 
     final = df_expandido[df_expandido["horas_recargo"] > 0].copy()
 
-    final["horas_recargo"] = final["horas_recargo"].astype(int)
-
     # Agrupación
     resultado = final.groupby(["NOMBRE", "MATERIA_ACTIVIDAD"])["horas_recargo"].sum().reset_index()
 
@@ -133,4 +131,5 @@ if archivo is not None:
         data=output.getvalue(),
         file_name="horas_extra.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
     )
