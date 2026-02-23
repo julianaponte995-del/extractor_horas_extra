@@ -128,13 +128,13 @@ if archivo is not None:
 
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         final.to_excel(writer, index=False, sheet_name="Detalle")
-        pivot.to_excel(writer, index=False, sheet_name="Resumen")
 
     st.download_button(
         label="Descargar Excel 📥",
         data=output.getvalue(),
-        file_name="horas_extra.xlsx",
+        file_name="recargos.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
     )
+
 
