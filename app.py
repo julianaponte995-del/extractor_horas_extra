@@ -100,7 +100,11 @@ if archivo is not None:
 
     df_expandido["horas_recargo"] = df_expandido["minutos_recargo"] / 60
 
+    # FILTRAR POR LOS QUE TIENEN HORAS
     final = df_expandido[df_expandido["horas_recargo"] > 0].copy()
+
+    # QUITAR SABADO SANTO
+    final = final[final["fecha"] != "2026-04-04"]
 
     # Agrupación
     resultado = final.groupby(["NOMBRE", "MATERIA_ACTIVIDAD"])["horas_recargo"].sum().reset_index()
@@ -133,3 +137,4 @@ if archivo is not None:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
     )
+
