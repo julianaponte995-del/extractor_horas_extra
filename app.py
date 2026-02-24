@@ -107,6 +107,9 @@ if archivo is not None:
     # QUITAR SABADO SANTO
     final = final[final["fecha"] != "2026-04-04"]
 
+    # AGREGAR SEMANA DE CLASE
+    final["semana_clase"] = (final["fecha"].dt.isocalendar().week- final["MATERIA_INI"].dt.isocalendar().week) + 1
+
     # Agrupación
     resultado = final.groupby(["NOMBRE", "MATERIA_ACTIVIDAD"])["horas_recargo"].sum().reset_index()
 
@@ -137,6 +140,7 @@ if archivo is not None:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
     )
+
 
 
 
