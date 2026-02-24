@@ -66,6 +66,8 @@ if archivo is not None:
         df_final['minutos_fin'] - np.maximum(df_final['minutos_inicio'], inicio_recargo_global)
     ).clip(lower=0)
 
+    df_final = df_final[df_final["minutos_recargo"] > 0]
+
     # Calendario
     dias_map = {
         "Monday": "LU",
@@ -135,6 +137,7 @@ if archivo is not None:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
     )
+
 
 
 
