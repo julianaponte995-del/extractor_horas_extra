@@ -43,6 +43,7 @@ if archivo is not None:
 
     df["HORAS"] = df["HORAS"].str.replace("NO TIENE", "0")
     df = df[df["HORAS"] != "0"]
+    df = df[df["NPLAN"] != "800"]
     df["MATERIA_INI"] = pd.to_datetime(df["MATERIA_INI"], dayfirst=True)
     df["MATERIA_FIN"] = pd.to_datetime(df["MATERIA_FIN"], dayfirst=True)
 
@@ -137,6 +138,7 @@ if archivo is not None:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
     )
+
 
 
 
