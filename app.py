@@ -122,9 +122,6 @@ if archivo is not None:
     st.subheader("Resultados detallados")
     st.dataframe(final)
 
-    st.subheader("Resumen por profesor")
-    st.dataframe(pivot)
-
     # 🔥 EXPORTAR BIEN (AQUÍ ESTABA TU ERROR)
     output = io.BytesIO()
 
@@ -138,6 +135,7 @@ if archivo is not None:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
     )
+
 
 
 
