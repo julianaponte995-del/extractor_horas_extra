@@ -116,19 +116,6 @@ if archivo is not None:
     st.subheader("Resultados detallados - Horarios")
     st.dataframe(final)
 
-    # ── Descarga archivo de horarios ──
-    output_horarios = io.BytesIO()
-    with pd.ExcelWriter(output_horarios, engine='openpyxl') as writer:
-        final.to_excel(writer, index=False, sheet_name="Detalle")
-        df_agrupado.to_excel(writer, index=False, sheet_name="horario_agrupado")
-
-    st.download_button(
-        label="Descargar Excel Horarios 📥",
-        data=output_horarios.getvalue(),
-        file_name="recargos_final.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-
     # ════════════════════════════════════════
     # SECCIÓN BIOMÉTRICO (solo si se subió)
     # ════════════════════════════════════════
@@ -183,7 +170,7 @@ if archivo is not None:
         # ── Descarga archivo biométrico ──
         output_bio = io.BytesIO()
         with pd.ExcelWriter(output_bio, engine='openpyxl') as writer:
-            final.to_excel(writer, index=False, sheet_name="Detalle")
+            final.to_excel(writer, index=False, sheet_name="Horario")
             df_agrupado.to_excel(writer, index=False, sheet_name="horario_agrupado")
             df_resultado.to_excel(writer, index=False, sheet_name="cruce_biometrico")
 
@@ -195,6 +182,7 @@ if archivo is not None:
         )
     else:
         st.info("Sube el archivo biométrico para generar el cruce.")
+
 
 
 
