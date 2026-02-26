@@ -115,7 +115,13 @@ if archivo is not None:
     final = final[(final["fecha"] < "2026-03-29") | (final["fecha"] > "2026-04-05")]
 
     # Poner columna nombre de mes 
-    final.insert(1, "mes", final["fecha"].dt.month_name(locale="es_ES"))
+    meses_espanol = {
+    'January': 'Enero', 'February': 'Febrero', 'March': 'Marzo', 
+    'April': 'Abril', 'May': 'Mayo', 'June': 'Junio', 
+    'July': 'Julio', 'August': 'Agosto', 'September': 'Septiembre', 
+    'October': 'Octubre', 'November': 'Noviembre', 'December': 'Diciembre'}
+    
+    final.insert(1, "mes", final["fecha"].dt.month_name().map(meses_espanol))
     final["mes"] = final["mes"].str.upper() # poner en mayuscula
 
     # Agrupación de horario con llave
@@ -164,6 +170,7 @@ if archivo is not None:
         file_name="recargos_final.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
