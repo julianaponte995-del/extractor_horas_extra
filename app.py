@@ -66,7 +66,11 @@ if archivo is not None:
         df_final['minutos_fin'] - np.maximum(df_final['minutos_inicio'], inicio_recargo_global)
     ).clip(lower=0)
 
+    # Filtrar por aquellos que tengan minutos de recargo mayores a 0
     df_final = df_final[df_final["minutos_recargo"] > 0]
+
+    # Eliminar las columnas que no aportan
+    df_final = df_final.drop(columns=['MATERIA_ACTIVIDAD', 'TOTAL_HORAS', 'GRUPO'])
 
     # Calendario
     dias_map = {
@@ -110,6 +114,10 @@ if archivo is not None:
     # QUITAR SEMANA SANTA
     final = final[(final["fecha"] < "2026-03-29") | (final["fecha"] > "2026-04-05")]
 
+    # Poner columna nombre de mes 
+    final.insert(1, "mes", final["fecha"].dt.month_name(locale="es_ES"))
+    final["mes"] = final["mes"].str.upper() # poner en mayuscula
+
     # Agrupación
     resultado = final.groupby(["NOMBRE", "MATERIA_ACTIVIDAD"])["horas_recargo"].sum().reset_index()
 
@@ -137,6 +145,7 @@ if archivo is not None:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
     )
+
 
 
 
