@@ -147,22 +147,23 @@ if archivo is not None:
         df_resultado = df_resultado.sort_values(by=['fecha', 'Documento'], ascending=[True, True])
 
         # Diferencia de horas
+        # 1. Llenar nulos con 0 de inmediato y espacios con nan para hora salida
+        df_resultado['hora_salida'] = df_resultado['hora_salida'].replace(" ",np.nan)
+        mascara_sin_salida = df_resultado['hora_salida'].astype(str).str.strip().isin(['0', '0.0', '', 'nan'])
         mascara_sin_clase = df_resultado['hora_fin_clase'].astype(str).str.strip().isin(['0', '0.0', '', 'nan'])
         hora_salida_td    = df_resultado['hora_salida'].apply(a_timedelta)
         hora_fin_clase_td = df_resultado['hora_fin_clase'].apply(a_timedelta)
 
-        df_resultado['Diferencia'] = np.where(
-            mascara_sin_clase,
-            0,
-            (hora_salida_td - hora_fin_clase_td).dt.total_seconds() / 3600
-        )
+        # Crear nueva columna con la diferencia
+        df_resultado['Diferencia'] = np.where(mascara_sin_clase | mascara_sin_salida,0,
+                                              (hora_salida_td - hora_fin_clase_td).dt.total_seconds() / 3600)
 
         # Total horas reales a pagar
         df_resultado['total_horas'] = np.where(
+        mascara_sin_salida,0, np.where(
             df_resultado['Diferencia'] < 0,
             df_resultado['Suma_Recargos'] + df_resultado['Diferencia'],
-            df_resultado['Suma_Recargos']
-        )
+            df_resultado['Suma_Recargos']))
         df_resultado['total_horas'] = df_resultado['total_horas'].clip(lower=0)
 
         st.dataframe(df_resultado)
@@ -182,6 +183,7 @@ if archivo is not None:
         )
     else:
         st.info("Sube el archivo biométrico para generar el cruce.")
+
 
 
 
