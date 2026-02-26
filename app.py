@@ -118,6 +118,20 @@ if archivo is not None:
     final.insert(1, "mes", final["fecha"].dt.month_name(locale="es_ES"))
     final["mes"] = final["mes"].str.upper() # poner en mayuscula
 
+    # Agrupación de horario con llave
+    # 1. Aplicamos Mínimo a la hora de inicio y Máximo a la hora de salida y sumando los recargos
+    df_agrupado = final.groupby(['DOCUMENTO', 'fecha']).agg(
+        Entrada_Real=('hora_inicio', 'min'),
+        Salida_Real=('hora_fin', 'max'),
+        Suma_Recargos=('horas_recargo', 'sum')).reset_index()
+    
+    llave_formateada = (df_agrupado['fecha'].dt.strftime('%d/%m/%Y') + '-' + df_agrupado['DOCUMENTO'].astype(str))
+    # 2. Creamos la columna llave (Fecha-Documento) al principio
+    df_agrupado.insert(0, 'ID_UNICO', llave_formateada)
+    
+    # 3. Ordenamos por Fecha y luego por Documento
+    df_agrupado = df_agrupado.sort_values(by=['DOCUMENTO', 'fecha'], ascending=[True, True])
+
     # Agrupación
     resultado = final.groupby(["NOMBRE", "MATERIA_ACTIVIDAD"])["horas_recargo"].sum().reset_index()
 
@@ -132,18 +146,23 @@ if archivo is not None:
     st.subheader("Resultados detallados")
     st.dataframe(final)
 
-    # 🔥 EXPORTAR BIEN (AQUÍ ESTABA TU ERROR)
+    # 1. Crear el objeto en memoria para el archivo Excel
     output = io.BytesIO()
-
+    
+    # 2. Escribir los dos DataFrames en el mismo objeto 'output'
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        # Hoja 1: Detalle
         final.to_excel(writer, index=False, sheet_name="Detalle")
-
+        
+        # Hoja 2: horario_agrupado
+        df_agrupado.to_excel(writer, index=False, sheet_name="horario_agrupado")
+    
+    # 3. Preparar el botón de descarga con el archivo que ya tiene ambas hojas
     st.download_button(
-        label="Descargar Excel 📥",
+        label="Descargar Excel con Consolidado 📥",
         data=output.getvalue(),
-        file_name="recargos.xlsx",
+        file_name="recargos_final.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-
     )
 
 
