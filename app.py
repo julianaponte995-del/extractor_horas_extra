@@ -138,16 +138,6 @@ if archivo is not None:
     # 3. Ordenamos por Fecha y luego por Documento
     df_agrupado = df_agrupado.sort_values(by=['DOCUMENTO', 'fecha'], ascending=[True, True])
 
-    # Agrupación
-    resultado = final.groupby(["NOMBRE", "MATERIA_ACTIVIDAD"])["horas_recargo"].sum().reset_index()
-
-    pivot = resultado.pivot_table(
-        index="NOMBRE",
-        values="horas_recargo",
-        aggfunc="sum",
-        fill_value=0
-    ).reset_index()
-
     # Mostrar resultados
     st.subheader("Resultados detallados")
     st.dataframe(final)
@@ -170,6 +160,7 @@ if archivo is not None:
         file_name="recargos_final.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
