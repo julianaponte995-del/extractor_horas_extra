@@ -133,7 +133,7 @@ if archivo is not None:
     
     llave_formateada = (df_agrupado['fecha'].dt.strftime('%d/%m/%Y') + '-' + df_agrupado['DOCUMENTO'].astype(str))
     # 2. Creamos la columna llave (Fecha-Documento) al principio
-    df_agrupado.insert(0, 'ID_UNICO', llave_formateada)
+    df_agrupado.insert(0, 'llave', llave_formateada)
     
     # 3. Ordenamos por Fecha y luego por Documento
     df_agrupado = df_agrupado.sort_values(by=['DOCUMENTO', 'fecha'], ascending=[True, True])
@@ -160,6 +160,7 @@ if archivo is not None:
         file_name="recargos_final.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
