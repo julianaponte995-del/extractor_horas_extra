@@ -168,6 +168,52 @@ if archivo is not None:
 
         st.dataframe(df_resultado)
 
+        # Creación de nuevas columnas en el df agrupado
+        
+        # meses
+        df_agrupado.insert(3, "mes", df_agrupado["fecha"].dt.month_name().map(meses_espanol))
+        df_agrupado["mes"] = df_agrupado["mes"].str.upper()
+
+        # Agregar hora de entrada y salida
+
+        # 1. Realizamos el 'BuscarV' (merge)
+        df_agrupado = pd.merge(
+            df_agrupado, 
+            biometrico[['llave', 'hora_entrada', 'hora_salida']], 
+            on='llave', 
+            how='left'
+        )
+        
+        # 2. Renombramos las columnas para que queden exactamente como las pediste
+        df_agrupado = df_agrupado.rename(columns={
+            'hora_entrada': 'hora_inicio_labor',
+            'hora_salida': 'hora_fin_labor'
+        })
+        
+        # Ordenar por fecha (cronológico) y luego por documento
+        df_agrupado = df_agrupado.sort_values(by=['DOCUMENTO', 'fecha'], ascending=[True, True])
+
+        # Aplicar cambio de formato horas y calcular diferencia
+        # Detectar filas sin clase y sin horario de salida 
+        mascara_sin_clase = df_agrupado['Salida_Real'].astype(str).str.strip().isin(['0', '0.0', '', 'nan'])
+        mascara_sin_salida = df_agrupado['hora_fin_labor'].astype(str).str.strip().isin(['0', '0.0', '', 'nan'])
+        
+        # Convertir a timedelta en columnas temporales
+        hora_salida_td    = df_agrupado['hora_fin_labor'].apply(a_timedelta).fillna(pd.Timedelta(0))
+        hora_fin_clase_td = df_agrupado['Salida_Real'].apply(a_timedelta).fillna(pd.Timedelta(0))
+        
+        # 2. Ahora la resta funcionará: (0:00:00 - 20:00:00) = -20 horas
+        df_agrupado['Diferencia'] = (hora_salida_td - hora_fin_clase_td).dt.total_seconds() / 3600
+
+        # AGREGAR COLUMNA DE TOTAL HORAS REALES A PAGAR 
+
+        valor_base = np.where(df_agrupado['Diferencia'] < 0, 
+                              df_agrupado['Suma_Recargos'] + df_agrupado['Diferencia'], 
+                              df_agrupado['Suma_Recargos'])
+        
+        # Paso 2: Aplicamos el límite de 0 (equivalente al SI externo)
+        df_agrupado['total_horas'] = np.where(valor_base < 0, 0, valor_base)
+
         # ── Descarga archivo biométrico ──
         output_bio = io.BytesIO()
         with pd.ExcelWriter(output_bio, engine='openpyxl') as writer:
@@ -183,6 +229,7 @@ if archivo is not None:
         )
     else:
         st.info("Sube el archivo biométrico para generar el cruce.")
+
 
 
 
