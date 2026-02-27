@@ -170,7 +170,7 @@ if archivo is not None:
         df_resultado = df_resultado.sort_values(['llave', 'total_horas'], ascending=[True, False])
 
         # Se elimina el duplicado con menor recargo
-        df_resultado = df_resultado.drop_duplicates(subset='llave', keep='first'
+        df_resultado = df_resultado.drop_duplicates(subset='llave', keep='first')
 
         st.dataframe(df_resultado)
 
@@ -235,6 +235,7 @@ if archivo is not None:
         )
     else:
         st.info("Sube el archivo biométrico para generar el cruce.")
+
 
 
 
