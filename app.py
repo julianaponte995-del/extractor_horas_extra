@@ -166,6 +166,12 @@ if archivo is not None:
             df_resultado['Suma_Recargos']))
         df_resultado['total_horas'] = df_resultado['total_horas'].clip(lower=0)
 
+        # Ordenamos el biométrico por llave y por total_horas de forma descendente
+        df_resultado = df_resultado.sort_values(['llave', 'total_horas'], ascending=[True, False])
+
+        # Se elimina el duplicado con menor recargo
+        df_resultado = df_resultado.drop_duplicates(subset='llave', keep='first'
+
         st.dataframe(df_resultado)
 
         # Creación de nuevas columnas en el df agrupado
@@ -229,6 +235,7 @@ if archivo is not None:
         )
     else:
         st.info("Sube el archivo biométrico para generar el cruce.")
+
 
 
 
