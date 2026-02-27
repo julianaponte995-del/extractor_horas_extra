@@ -185,7 +185,7 @@ if archivo is not None:
         # 1. Realizamos el 'BuscarV' (merge)
         df_agrupado = pd.merge(
             df_agrupado, 
-            biometrico[['llave', 'hora_entrada', 'hora_salida']], 
+            df_resultado[['llave', 'hora_entrada', 'hora_salida']], 
             on='llave', 
             how='left'
         )
@@ -235,6 +235,7 @@ if archivo is not None:
         )
     else:
         st.info("Sube el archivo biométrico para generar el cruce.")
+
 
 
 
